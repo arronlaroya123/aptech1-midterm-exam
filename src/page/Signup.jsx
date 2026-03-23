@@ -1,82 +1,49 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    firstName: "",
-    surname: "",
-    username: "",
-    password: "",
-    email: ""
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      firstName: "",
+      surname: "",
+      username: "",
+      password: "",
+      email: ""
+    },
   });
 
-  const [errors, setErrors] = useState({});
-
-  const nameRegex = /^[A-Za-z]{2,}$/;
-  const usernameRegex = /^[A-Za-z0-9._-]+$/;
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,16}$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  const validate = (data = formData) => {
-    const newErrors = {};
-    if (!nameRegex.test(data.firstName)) newErrors.firstName = "Invalid first name";
-    if (!nameRegex.test(data.surname)) newErrors.surname = "Invalid surname";
-    if (!usernameRegex.test(data.username)) newErrors.username = "Invalid username";
-    if (!passwordRegex.test(data.password)) newErrors.password = "Invalid password";
-    if (!emailRegex.test(data.email)) newErrors.email = "Invalid email";
-    return newErrors;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updated = { ...formData, [name]: value };
-    setFormData(updated);
-    setErrors(validate(updated));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length === 0) {
-      navigate("/success");
-    } else {
-      setErrors(validationErrors);
-    }
+  const onSubmit = (data) => {
+    console.log(data);
+    navigate("/success");
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <h1>Signup Page</h1>
 
-      <input name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First name" />
-      {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
+      <input {...register("firstName", { required: "Required", minLength: { value: 2, message: "Min 2 chars" } })} placeholder="First name" />
+      {errors.firstName && <p style={{ color: "red" }}>{errors.firstName.message}</p>}
 
-      <br /><br />
+      <input {...register("surname", { required: "Required", minLength: { value: 2, message: "Min 2 chars" } })} placeholder="Surname" />
+      {errors.surname && <p style={{ color: "red" }}>{errors.surname.message}</p>}
 
-      <input name="surname" value={formData.surname} onChange={handleChange} placeholder="Surname" />
-      {errors.surname && <p style={{ color: "red" }}>{errors.surname}</p>}
+      <input {...register("username", { required: "Required", pattern: { value: /^[A-Za-z0-9._-]+$/, message: "Invalid username" } })} placeholder="Username" />
+      {errors.username && <p style={{ color: "red" }}>{errors.username.message}</p>}
 
-      <br /><br />
+      <input type="password" {...register("password", { required: "Required", pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,16}$/, message: "Invalid password" } })} placeholder="Password" />
+      {errors.password && <p style={{ color: "red" }}>{errors.password.message}</p>}
 
-      <input name="username" value={formData.username} onChange={handleChange} placeholder="Username" />
-      {errors.username && <p style={{ color: "red" }}>{errors.username}</p>}
-
-      <br /><br />
-
-      <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" />
-      {errors.password && <p style={{ color: "red" }}>{errors.password}</p>}
-
-      <br /><br />
-
-      <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" />
-      {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
-
-      <br /><br />
+      <input type="email" {...register("email", { required: "Required", pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" } })} placeholder="Email" />
+      {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
 
       <button type="button" onClick={() => console.log("Clicked")}>Test</button>
-      <br /><br />
       <button type="submit" disabled={Object.keys(errors).length > 0}>Submit</button>
     </form>
   );
