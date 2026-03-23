@@ -28,10 +28,10 @@ function Signup() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <h1>Signup Page</h1>
 
-      <input {...register("firstName", { required: "Required", minLength: { value: 2, message: "Min 2 chars" } })} placeholder="First name" />
+      <input {...register("firstName", { required: "Required", minLength: { value: 2, message: "Min 2 chars" }, pattern: { value: /^[A-Za-z]+$/, message: "Letters only" } })} placeholder="First name" />
       {errors.firstName && <p style={{ color: "red" }}>{errors.firstName.message}</p>}
 
-      <input {...register("surname", { required: "Required", minLength: { value: 2, message: "Min 2 chars" } })} placeholder="Surname" />
+      <input {...register("surname", { required: "Required", minLength: { value: 2, message: "Min 2 chars" }, pattern: { value: /^[A-Za-z]+$/, message: "Letters only" } })} placeholder="Surname" />
       {errors.surname && <p style={{ color: "red" }}>{errors.surname.message}</p>}
 
       <input {...register("username", { required: "Required", pattern: { value: /^[A-Za-z0-9._-]+$/, message: "Invalid username" } })} placeholder="Username" />

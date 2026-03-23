@@ -1,4 +1,3 @@
-src/pages/Success.jsx
 function Success() {
   return (
     <div>
