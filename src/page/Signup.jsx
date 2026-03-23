@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstName: "",
     surname: "",
@@ -16,18 +19,7 @@ function Signup() {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,16}$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const validate = () => {
-    const newErrors = {};
-
-      const handleChange = (e) => {
-    const { name, value } = e.target;
-    const updated = { ...formData, [name]: value };
-    setFormData(updated);
-    setErrors(validate(updated));
-  };
-
-
-     const validate = (data = formData) => {
+  const validate = (data = formData) => {
     const newErrors = {};
     if (!nameRegex.test(data.firstName)) newErrors.firstName = "Invalid first name";
     if (!nameRegex.test(data.surname)) newErrors.surname = "Invalid surname";
@@ -35,31 +27,26 @@ function Signup() {
     if (!passwordRegex.test(data.password)) newErrors.password = "Invalid password";
     if (!emailRegex.test(data.email)) newErrors.email = "Invalid email";
     return newErrors;
-    return newErrors;
   };
 
-    if (!nameRegex.test(formData.firstName)) newErrors.firstName = "Invalid first name";
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const updated = { ...formData, [name]: value };
+    setFormData(updated);
+    setErrors(validate(updated));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const validationErrors = validate();
-    setErrors(validationErrors);
-
     if (Object.keys(validationErrors).length === 0) {
-      alert("Form submitted!");
-      console.log(formData);
-      // optional form reset:
-      // setFormData({ firstName:"", surname:"", username:"", password:"", email:"" });
+      navigate("/success");
+    } else {
+      setErrors(validationErrors);
     }
   };
 
   return (
-    
     <form onSubmit={handleSubmit}>
       <h1>Signup Page</h1>
 
@@ -90,7 +77,7 @@ function Signup() {
 
       <button type="button" onClick={() => console.log("Clicked")}>Test</button>
       <br /><br />
-      <button type="submit">Submit</button>
+      <button type="submit" disabled={Object.keys(errors).length > 0}>Submit</button>
     </form>
   );
 }
